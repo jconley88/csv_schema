@@ -157,13 +157,31 @@ describe CSVSchema do
       describe "restrict_values" do
         it "should NOT raise if all field values appear in the RESTRICT_VALUES array for the specified field" do
           options = {:file => generate_csv_file.path, :field_requirements => {'header_1' => {:restrict_values => ['value_1']}}}
-          CSVSchema.new(@lenient_options.merge(options)).validate
           lambda { CSVSchema.new(@lenient_options.merge(options)).validate }.should_not raise_error
         end
 
         it "should raise if any field values do NOT appear in the RESTRICT_VALUES array for the specified field" do
           options = {:file => generate_csv_file.path, :field_requirements => {'header_1' => {:restrict_values => []}}}
           lambda { CSVSchema.new(@lenient_options.merge(options)).validate }.should raise_error
+        end
+      end
+
+      describe "cant_be_nil" do
+        it "should NOT raise if all values for the specified field are populated" do
+          options = {:file => generate_csv_file.path, :field_requirements => {'header_1' => {:cant_be_nil => true}}}
+          lambda { CSVSchema.new(@lenient_options.merge(options)).validate }.should_not raise_error
+        end
+
+        it "should NOT raise if values in fields other than the specified one have nil values" do
+          @rows << ['value_1', nil, '']
+          options = {:file => generate_csv_file.path, :field_requirements => {'header_1' => {:cant_be_nil => true}}}
+          lambda { CSVSchema.new(@lenient_options.merge(options)).validate }.should_not raise_error
+        end
+
+        it "should raise with field name and column number if a value in the specified field is nil" do
+          @rows << ['', 'value_2', 'value_3']
+          options = {:file => generate_csv_file.path, :field_requirements => {'header_1' => {:cant_be_nil => true}}}
+          lambda { CSVSchema.new(@lenient_options.merge(options)).validate }.should raise_error(StandardError, /header_1.*3/)
         end
       end
     end

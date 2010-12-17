@@ -104,7 +104,12 @@ private
   end
 
   def validate_cant_be_nil_fields(row)
-
+    @cant_be_nil_fields.each do |col_num|
+      if row[col_num] == nil
+        msg = "The '#{header_name(col_num)}' column contains an illegal nil value in row #{@current_row}"
+        raise msg
+      end
+    end
   end
 
   def add_to_uniqueness_validator(row)
