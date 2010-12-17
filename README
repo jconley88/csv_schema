@@ -1,0 +1,10 @@
+csv validations:
+
+correct line feeds (mac vs. unix)?
+
+
+
+:required fields =>
+{
+'field1' => {:unique => true, :cant_be_nil => true, :restrict_values => []}
+}
