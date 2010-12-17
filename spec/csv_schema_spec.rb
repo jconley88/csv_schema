@@ -53,7 +53,7 @@ describe CSVSchema do
     describe "duplicate headers" do
       it "should raise when duplicate headers exist and the ALLOW_DUPLICATE_HEADERS flag is FALSE" do
         @headers = ['header_1', 'header_1']
-        lambda{CSVSchema.new(@lenient_options.merge(:file => generate_csv_file.path, :allow_duplicate_headers => false)).validate}.should raise_error
+        lambda{CSVSchema.new(@lenient_options.merge(:file => generate_csv_file.path, :allow_duplicate_headers => false)).validate}.should raise_error(StandardError, /header_1/)
       end
 
       it "should raise when duplicate headers exist according to the HEADERS_TRANSFORM proc and the ALLOW_DUPLICATE_HEADERS flag is FALSE" do
@@ -119,7 +119,7 @@ describe CSVSchema do
 
       it "should raise when there are blank rows and the ALLOW_BLANK_ROWS flag is false" do
         @rows << ['', '', '']
-        lambda { CSVSchema.new(@lenient_options.merge(:file => generate_csv_file.path, :allow_blank_rows => false)).validate }.should raise_error
+        lambda { CSVSchema.new(@lenient_options.merge(:file => generate_csv_file.path, :allow_blank_rows => false)).validate }.should raise_error(StandardError, /3/)
       end
     end
 
@@ -144,12 +144,12 @@ describe CSVSchema do
 
       it "should raise when the field count in a header row differs from a data row and the ALLOW_DIFFERENT_FIELD_COUNTS flag is false" do
         @headers << 'header_4'
-        lambda { CSVSchema.new(@lenient_options.merge(:file => generate_csv_file.path, :allow_different_field_counts => false)).validate }.should raise_error
+        lambda { CSVSchema.new(@lenient_options.merge(:file => generate_csv_file.path, :allow_different_field_counts => false)).validate }.should raise_error(StandardError, /2/)
       end
 
       it "should raise when the field counts in two data rows differ and the ALLOW_DIFFERENT_FIELD_COUNTS flag is false" do
-        @rows << (@rows.first << 'value_4')
-        lambda { CSVSchema.new(@lenient_options.merge(:file => generate_csv_file.path, :allow_different_field_counts => false)).validate }.should raise_error
+        @rows << (@rows.first.dup << 'value_4')
+        lambda { CSVSchema.new(@lenient_options.merge(:file => generate_csv_file.path, :allow_different_field_counts => false)).validate }.should raise_error(StandardError, /3/)
       end
     end
 
@@ -162,7 +162,7 @@ describe CSVSchema do
 
         it "should raise if any field values do NOT appear in the RESTRICT_VALUES array for the specified field" do
           options = {:file => generate_csv_file.path, :field_requirements => {'header_1' => {:restrict_values => []}}}
-          lambda { CSVSchema.new(@lenient_options.merge(options)).validate }.should raise_error
+          lambda { CSVSchema.new(@lenient_options.merge(options)).validate }.should raise_error(StandardError, /header_1.*value_1.*2/)
         end
       end
 

@@ -80,7 +80,7 @@ private
   end
 
   def validate_blank_headers(row)
-    raise if row.any?{|h| (h == '') || (h == nil)}
+    raise "There are illegal blank headers.  If this is allowed, set :allow_blank_headers => true" if row.any?{|h| (h == '') || (h == nil)}
   end
 
   def validate_required_headers(row)
@@ -89,17 +89,17 @@ private
   end
 
   def validate_blank_rows(row)
-    raise "#{File.basename(@file)} has blank rows" if row.all?{|f| (f == nil) || (f == '')}
+    raise "Row #{@current_row} in #{File.basename(@file)} is blank" if row.all?{|f| (f == nil) || (f == '')}
   end
 
   def validate_different_field_counts(row)
     @field_count ||= row.count
-    raise "Row #{@current_row} has a different number of fields" if @field_count != row.count
+    raise "Row #{@current_row} has a different number of fields than all the rows preceding it" if @field_count != row.count
   end
 
   def validate_restrict_value_fields(row)
     @restrict_value_fields.each do |col_num, allowed_values|
-      raise "The '#{header_name(col_num)}' column contains an illegal value: '#{row[col_num]}'" unless allowed_values.include?(row[col_num])
+      raise "The '#{header_name(col_num)}' column contains an illegal value: '#{row[col_num]}' in row #{@current_row}" unless allowed_values.include?(row[col_num])
     end
   end
 
