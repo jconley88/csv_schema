@@ -153,7 +153,13 @@ describe CSVSchema do
     end
 
     describe "field_requirements" do
+
       describe "restrict_values" do
+        it "should raise if referenced column does not exist" do
+          options = {:file => generate_csv_file.path, :field_requirements => {'doesnt_exist' => {:restrict_values => []}}}
+          lambda { CSVSchema.new(@lenient_options.merge(options)).validate }.should raise_error
+        end
+
         it "should NOT raise if all field values appear in the RESTRICT_VALUES array for the specified field" do
           options = {:file => generate_csv_file.path, :field_requirements => {'header_1' => {:restrict_values => ['value_1']}}}
           lambda { CSVSchema.new(@lenient_options.merge(options)).validate }.should_not raise_error
@@ -166,6 +172,11 @@ describe CSVSchema do
       end
 
       describe "cant_be_nil" do
+        it "should raise if referenced column does not exist" do
+          options = {:file => generate_csv_file.path, :field_requirements => {'doesnt_exist' => {:cant_be_nil => true}}}
+          lambda { CSVSchema.new(@lenient_options.merge(options)).validate }.should raise_error
+        end
+
         it "should NOT raise if all values for the specified field are populated" do
           options = {:file => generate_csv_file.path, :field_requirements => {'header_1' => {:cant_be_nil => true}}}
           lambda { CSVSchema.new(@lenient_options.merge(options)).validate }.should_not raise_error
@@ -185,6 +196,11 @@ describe CSVSchema do
       end
 
       describe 'unique' do
+        it "should raise if referenced column does not exist" do
+          options = {:file => generate_csv_file.path, :field_requirements => {'doesnt_exist' => {:unique => []}}}
+          lambda { CSVSchema.new(@lenient_options.merge(options)).validate }.should raise_error
+        end
+
         it "should NOT raise if all of the values are unique" do
           @rows << ['v1']
           @rows << ['v2']
