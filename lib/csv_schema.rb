@@ -27,11 +27,11 @@ class CSVSchema
     @current_row = 1
     FasterCSV.foreach(@file) do |row|
       if @current_row == 1
-        @headers = row
-        index_field_requirements_by_column_number
-        validate_duplicate_headers(row, @headers_transform) unless @allow_duplicate_headers
-        validate_blank_headers(row) unless @allow_blank_headers
-        validate_required_headers(row) if @required_headers
+        headers = transform(row)
+        index_field_requirements_by_column_number(headers)
+        validate_duplicate_headers(headers) unless @allow_duplicate_headers
+        validate_blank_headers(headers) unless @allow_blank_headers
+        validate_required_headers(headers) if @required_headers
       else
         validate_blank_rows(row) unless @allow_blank_rows
         validate_restrict_value_fields(row) if !@restrict_value_fields.empty?
@@ -45,9 +45,9 @@ class CSVSchema
   end
 
 private
-  def index_field_requirements_by_column_number
+  def index_field_requirements_by_column_number(headers)
     headers_to_column_number = Hash.new { |hash, key| raise "The specified column '#{key}' does not exist" }
-    @headers.each_with_index do |header, column_number|
+    headers.each_with_index do |header, column_number|
       headers_to_column_number[header] = column_number
     end
     @indexed_headers = headers_to_column_number.invert
@@ -71,20 +71,19 @@ private
     @unique_fields = u
   end
 
-  def validate_duplicate_headers(row, transform = nil)
-    headers = transform ? row.map{ |header| transform.call(header)} : row
+  def validate_duplicate_headers(headers)
     dups = headers.inject(Hash.new(0)) { |h, v| h[v] += 1; h }.reject { |k, v| v==1 }.keys #http://snippets.dzone.com/posts/show/3838
     if dups.length > 0
       raise "Duplicate headers exist: #{dups.inspect}"
     end
   end
 
-  def validate_blank_headers(row)
-    raise "There are illegal blank headers.  If this is allowed, set :allow_blank_headers => true" if row.any?{|h| (h == '') || (h == nil)}
+  def validate_blank_headers(headers)
+    raise "There are illegal blank headers.  If this is allowed, set :allow_blank_headers => true" if headers.any?{|h| (h == '') || (h == nil)}
   end
 
-  def validate_required_headers(row)
-    missing = @required_headers - row
+  def validate_required_headers(headers)
+    missing = @required_headers - headers
     raise "#{File.basename(@file)} is missing headers: #{missing.inspect}" unless missing.empty?
   end
 
@@ -129,5 +128,9 @@ private
 
   def header_name(col_num)
     @indexed_headers[col_num]
+  end
+
+  def transform(header_row)
+    @headers_transform ? header_row.map { |header| @headers_transform.call(header) } : header_row
   end
 end

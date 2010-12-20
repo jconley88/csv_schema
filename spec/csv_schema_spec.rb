@@ -96,6 +96,18 @@ describe CSVSchema do
         lambda { CSVSchema.new(@lenient_options.merge(:file => generate_csv_file.path, :required_headers => ['header_1'])).validate }.should_not raise_error
       end
 
+      it "should NOT raise when the transformed headers do exist" do
+        @headers = ['HEADER 1']
+        transform = FasterCSV::HeaderConverters[:symbol]
+        lambda { CSVSchema.new(@lenient_options.merge(:file => generate_csv_file.path, :required_headers => [:header_1], :headers_transform => transform)).validate }.should_not raise_error()
+      end
+
+      it "should raise when the transformed headers do NOT exist" do
+        @headers = ['HEADER 1']
+        transform = FasterCSV::HeaderConverters[:symbol]
+        lambda { CSVSchema.new(@lenient_options.merge(:file => generate_csv_file.path, :required_headers => @headers, :headers_transform => transform)).validate }.should raise_error(StandardError, /#{@headers.first}/)
+      end
+
       it "should raise when any REQUIRED HEADERS do NOT exist" do
         missing_header = 'doesnt_exist'
         lambda { CSVSchema.new(@lenient_options.merge(:file => generate_csv_file.path, :required_headers => [missing_header])).validate }.should raise_error(StandardError, /#{missing_header}/)
