@@ -25,6 +25,7 @@ Gem::Specification.new do |s|
      "README.rdoc",
      "Rakefile",
      "VERSION",
+     "csv_schema.gemspec",
      "lib/csv_schema.rb",
      "spec/csv_schema_spec.rb",
      "spec/spec_helper.rb"
