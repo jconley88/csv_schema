@@ -18,7 +18,7 @@ class CSVSchema
     field_requirements.each do |field, requirements|
       @unique_fields[field] = [] if requirements[:unique]
       @cant_be_nil_fields << field if requirements[:cant_be_nil]
-      @restrict_value_fields[field] = requirements[:restrict_values] if requirements[:restrict_values]
+      @restrict_value_fields[field] = requirements[:restrict_values] << nil if requirements[:restrict_values]
     end
   end
 

@@ -165,6 +165,12 @@ describe CSVSchema do
           lambda { CSVSchema.new(@lenient_options.merge(options)).validate }.should_not raise_error
         end
 
+        it "should allow nil values" do
+          @rows << [nil]
+          options = {:file => generate_csv_file.path, :field_requirements => {'header_1' => {:restrict_values => ['value_1']}}}
+          lambda { CSVSchema.new(@lenient_options.merge(options)).validate }.should_not raise_error
+        end
+
         it "should raise if any field values do NOT appear in the RESTRICT_VALUES array for the specified field" do
           options = {:file => generate_csv_file.path, :field_requirements => {'header_1' => {:restrict_values => []}}}
           lambda { CSVSchema.new(@lenient_options.merge(options)).validate }.should raise_error(StandardError, /header_1.*value_1.*2/)
