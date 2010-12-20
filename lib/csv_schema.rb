@@ -46,7 +46,7 @@ class CSVSchema
 
 private
   def index_field_requirements_by_column_number
-    headers_to_column_number = {}
+    headers_to_column_number = Hash.new { |hash, key| raise "The specified column '#{key}' does not exist" }
     @headers.each_with_index do |header, column_number|
       headers_to_column_number[header] = column_number
     end
