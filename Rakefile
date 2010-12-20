@@ -5,12 +5,13 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "csv_schema"
-    gem.summary = %Q{TODO: one-line summary of your gem}
-    gem.description = %Q{TODO: longer description of your gem}
-    gem.email = "conley.jj@gmail.com"
+    gem.summary = %Q{This gem validates the format of csv data for ETL tools}
+    gem.description = %Q{This validator is intended to be run on csv files that are updated and received on a regular basis.  It allows you to specify required headers the following data restrictions:  columns that must be unique, columns that must be restricted to certain values, or columns that can't allow nil values.  This gem checks that the newly received file is consistent with the specified 'csv schema'.  This frees you form having to manually check that the new file has not changed and reduces the possibility that an unnoticed change will cause any subsequent analyses to be incorrect. }
+    gem.email = ""
     gem.homepage = "http://github.com/jconley88/csv_schema"
     gem.authors = ["jconley"]
-    gem.add_development_dependency "rspec", ">= 1.2.9"
+    gem.add_development_dependency "rspec", "~> 1.3.1"
+    gem.add_dependency "fastercsv", "~> 1.5.3"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new
