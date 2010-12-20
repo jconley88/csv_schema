@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{csv_schema}
-  s.version = "0.0.0"
+  s.version = "0.0.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["jconley"]
-  s.date = %q{2010-12-19}
+  s.date = %q{2010-12-20}
   s.description = %q{This validator is intended to be run on csv files that are updated and received on a regular basis.  It allows you to specify required headers the following data restrictions:  columns that must be unique, columns that must be restricted to certain values, or columns that can't allow nil values.  This gem checks that the newly received file is consistent with the specified 'csv schema'.  This frees you form having to manually check that the new file has not changed and reduces the possibility that an unnoticed change will cause any subsequent analyses to be incorrect. }
   s.email = %q{}
   s.extra_rdoc_files = [
